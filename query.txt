@@ -1,0 +1,18 @@
+# mutation {
+#   createTodo(title: "first", completed: true) {
+#     id
+#     title
+#     completed
+#   }
+# }
+
+{
+  todo(id: "1") {
+    message
+    data {
+      id
+      title
+      completed
+    }
+  }
+}

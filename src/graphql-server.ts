@@ -3,8 +3,8 @@ import express from 'express';
 import { graphqlHTTP } from 'express-graphql';
 import { GraphQLObjectType, GraphQLSchema, GraphQLString, GraphQLBoolean } from 'graphql';
 import pool from '../src/db'; // Import your PostgreSQL database connection
-import todosResolvers from '../src/todosResolvers'; // Import your GraphQL resolvers
-import { TodoType, TodoResultType } from '../src/todosTypes'; // Import your GraphQL type definition for Todo
+import todosResolvers from './Resolver/todosResolvers'; // Import your GraphQL resolvers
+import { TodoType, TodoResultType } from './Schema/todosTypes'; // Import your GraphQL type definition for Todo
 
 const app = express();
 

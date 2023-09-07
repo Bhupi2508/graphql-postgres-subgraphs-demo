@@ -1,5 +1,5 @@
 // Establishing a connection to your PostgreSQL database
-import pool from './db';
+import pool from '../db';
 
 // Function to retrieve a specific todo item by ID from the database.
 const getTodo = async (id: string) => {
