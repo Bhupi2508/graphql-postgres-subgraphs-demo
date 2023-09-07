@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "target": "ES2019", // Compile to ECMAScript 2019
+        "module": "commonjs", // Use CommonJS module system
+        "outDir": "./dist", // Output directory for compiled files
+        "rootDir": "./src", // Root directory for source files
+        "strict": true, // Enable strict type checking
+        "esModuleInterop": true // Enable ES module interop
+    }
+}
