@@ -1,10 +1,9 @@
-// src/graphql-server.ts
 import express from 'express';
 import { graphqlHTTP } from 'express-graphql';
-import { GraphQLObjectType, GraphQLSchema, GraphQLString, GraphQLBoolean } from 'graphql';
+import { GraphQLObjectType, GraphQLSchema, GraphQLString, GraphQLInt, GraphQLBoolean } from 'graphql';
 import pool from '../src/db'; // Import your PostgreSQL database connection
 import todosResolvers from './Resolver/todosResolvers'; // Import your GraphQL resolvers
-import { TodoType, TodoResultType } from './Schema/todosTypes'; // Import your GraphQL type definition for Todo
+import { BookType, BookResultType } from './Schema/todosTypes'; // Import your GraphQL type definition for Book
 
 const app = express();
 
@@ -13,28 +12,36 @@ const schema = new GraphQLSchema({
     query: new GraphQLObjectType({
         name: 'Query',
         fields: {
-            // Query to get a Todo by ID
-            todo: {
-                type: TodoResultType,
+            // Query to get books based on optional criteria.
+            // You can fetch books by specifying one or more of the following arguments:
+            //   - book_id: The ID of the book to retrieve (optional).
+            //   - author: The author of the book to retrieve (optional).
+            //   - published_year: The published year of the book to retrieve (optional).
+            // If no arguments are provided, all books will be fetched.
+            getBooks: {
+                type: BookResultType,
                 args: {
-                    id: { type: GraphQLString },
+                    book_id: { type: GraphQLString },
+                    author: { type: GraphQLString },
+                    published_year: { type: GraphQLInt },
                 },
-                resolve: (_, args) => todosResolvers.Query.todo(_, args),
-                // The 'resolve' function calls the corresponding resolver function
+                resolve: (_, args) => todosResolvers.Query.getBooks(_, args),
             },
         },
     }),
     mutation: new GraphQLObjectType({
         name: 'Mutation',
         fields: {
-            // Mutation to create a new Todo
-            createTodo: {
-                type: TodoResultType,
+            // Mutation to create a new Book
+            createBook: {
+                type: BookResultType,
                 args: {
                     title: { type: GraphQLString },
-                    completed: { type: GraphQLBoolean },
+                    author: { type: GraphQLString },
+                    published_year: { type: GraphQLInt },
+                    description: { type: GraphQLString }
                 },
-                resolve: (_, args) => todosResolvers.Mutation.createTodo(_, args),
+                resolve: (_, args) => todosResolvers.Mutation.createBook(_, args),
                 // The 'resolve' function calls the corresponding resolver function
             },
         },

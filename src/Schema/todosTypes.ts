@@ -1,25 +1,28 @@
 // Import necessary GraphQL types from 'graphql' library.
-import { GraphQLObjectType, GraphQLString, GraphQLBoolean, GraphQLID } from 'graphql';
+import { GraphQLObjectType, GraphQLString, GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLList } from 'graphql';
 
 // Define a GraphQLObjectType representing a Todo.
-const TodoType = new GraphQLObjectType({
-    name: 'Todo', // The name of the GraphQL type, used in queries and mutations.
+const BookType = new GraphQLObjectType({
+    name: 'Book', // The name of the GraphQL type, used in queries and mutations.
     fields: {
-        id: { type: GraphQLID }, // Field for 'id' with type GraphQLID (typically a unique identifier).
-        title: { type: GraphQLString }, // Field for 'title' with type GraphQLString (text description).
-        completed: { type: GraphQLBoolean }, // Field for 'completed' with type GraphQLBoolean (true/false).
+        book_id: { type: GraphQLID },
+        title: { type: GraphQLString }, 
+        author: { type: GraphQLString }, 
+        published_year: { type: GraphQLInt }, 
+        description: { type: GraphQLString }, 
+        created: { type: GraphQLString }
     },
 });
 
-const TodoResultType = new GraphQLObjectType({
-    name: 'TodoResult',
+const BookResultType = new GraphQLObjectType({
+    name: 'BookResultType',
     fields: {
-        data: { type: TodoType },
+        data: { type: new GraphQLList(BookType) }, // Use GraphQLList to represent an array of BookType,
         message: { type: GraphQLString },
     },
 });
 
-export { TodoType, TodoResultType };
+export { BookType, BookResultType };
 
 // Export the 'TodoType' for use in your GraphQL schema and resolvers.
-export default TodoType;
+export default BookType;
