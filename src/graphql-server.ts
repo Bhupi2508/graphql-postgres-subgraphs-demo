@@ -3,7 +3,8 @@ import { graphqlHTTP } from 'express-graphql';
 import { GraphQLObjectType, GraphQLSchema, GraphQLString, GraphQLInt, GraphQLBoolean } from 'graphql';
 import pool from '../src/db'; // Import your PostgreSQL database connection
 import todosResolvers from './Resolver/todosResolvers'; // Import your GraphQL resolvers
-import { BookType, BookResultType } from './Schema/todosTypes'; // Import your GraphQL type definition for Book
+import { BookType, BookResultType, StudentList, SingleStudentList, SingleBookResultType } from './Schema/todosTypes'; // Import your GraphQL type definition for Book
+import { GraphQLID } from 'graphql';
 
 const app = express();
 
@@ -27,6 +28,15 @@ const schema = new GraphQLSchema({
                 },
                 resolve: (_, args) => todosResolvers.Query.getBooks(_, args),
             },
+            getStudents: {
+                type: StudentList,
+                args: {
+                    id: { type: GraphQLString },
+                    name: { type: GraphQLString },
+                    age: { type: GraphQLInt },
+                },
+                resolve: (_, args) => todosResolvers.Query.getStudents(_, args),
+            },
         },
     }),
     mutation: new GraphQLObjectType({
@@ -34,7 +44,7 @@ const schema = new GraphQLSchema({
         fields: {
             // Mutation to create a new Book
             createBook: {
-                type: BookResultType,
+                type: SingleBookResultType,
                 args: {
                     title: { type: GraphQLString },
                     author: { type: GraphQLString },
@@ -42,6 +52,18 @@ const schema = new GraphQLSchema({
                     description: { type: GraphQLString }
                 },
                 resolve: (_, args) => todosResolvers.Mutation.createBook(_, args),
+                // The 'resolve' function calls the corresponding resolver function
+            },
+            // Mutation to add a new Book
+            addStudent: {
+                type: SingleStudentList,
+                args: {
+                    name: { type: GraphQLString },
+                    class: { type: GraphQLString },
+                    gender: { type: GraphQLString },
+                    age: { type: GraphQLInt }
+                },
+                resolve: (_, args) => todosResolvers.Mutation.addStudent(_, args),
                 // The 'resolve' function calls the corresponding resolver function
             },
         },

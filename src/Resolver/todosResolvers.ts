@@ -17,6 +17,22 @@ interface BookData {
     created: string;
 }
 
+interface Student {
+    name: string;
+    class: string;
+    gender: string;
+    age: number;
+}
+
+interface StudentData {
+    id: number;
+    name: string;
+    class: string;
+    gender: string;
+    age: number;
+    created: string;
+}
+
 // Function to retrieve books based on optional criteria.
 const getBooks = async ({
     id = null,
@@ -90,7 +106,6 @@ const getBooks = async ({
     }
 };
 
-
 // Function to add a new book item to the database.
 const addBook = async (book: Book): Promise<{ data: Book | null; message: string }> => {
     try {
@@ -123,6 +138,127 @@ const addBook = async (book: Book): Promise<{ data: Book | null; message: string
     }
 };
 
+// Function to retrieve students based on optional criteria.
+const getStudents = async ({
+    id = null,
+    name = null,
+    class: studentClass = null,
+    gender = null,
+    age = null,
+}: {
+    id?: string | null;
+    name?: string | null;
+    class?: string | null;
+    gender?: string | null;
+    age?: number | null;
+}): Promise<{ data: StudentData[] | null; message: string }> => {
+    try {
+        // Initialize the SQL query and values array
+        let query = 'SELECT * FROM students WHERE 1 = 1';
+        const values: any[] = [];
+
+        // Initialize placeholders for optional conditions
+        let placeholderCounter = 1;
+
+        // Add conditions based on provided criteria
+        if (name !== null) {
+            query += ` AND name = $${placeholderCounter}`;
+            values.push(name);
+            placeholderCounter++;
+        }
+
+        if (studentClass !== null) {
+            query += ` AND class = $${placeholderCounter}`;
+            values.push(studentClass);
+            placeholderCounter++;
+        }
+
+        if (gender !== null) {
+            query += ` AND gender = $${placeholderCounter}`;
+            values.push(gender);
+            placeholderCounter++;
+        }
+
+        if (age !== null) {
+            query += ` AND age = $${placeholderCounter}`;
+            values.push(age);
+            placeholderCounter++;
+        }
+
+        if (id !== null) {
+            query += ` AND id = $${placeholderCounter}`;
+            values.push(id);
+            placeholderCounter++;
+        }
+
+        // Execute the SQL query and retrieve students
+        const result = await pool.query(query, values);
+        const students: StudentData[] = result.rows.map((row) => ({
+            id: row.id,
+            name: row.name,
+            class: row.class,
+            gender: row.gender,
+            age: row.age,
+            created: row.created,
+        }));
+
+        // Check if students were found and return the result
+        if (students.length > 0) {
+            return {
+                data: students,
+                message: 'Successfully fetched students',
+            };
+        } else {
+            return {
+                data: null,
+                message: 'No students found',
+            };
+        }
+    } catch (error) {
+        // Handle errors and return an error message
+        console.error('Error fetching students:', error);
+        return {
+            data: null,
+            message: 'Error fetching students',
+        };
+    }
+};
+
+// Function to add a new student item to the database.
+const addStudent = async (student: Student): Promise<{ data: Student | null; message: string }> => {
+    try {
+        const query = `
+        INSERT INTO students (name, class, gender, age, created)
+        VALUES ($1, $2, $3, $4, $5)
+        RETURNING *;`;
+
+        const values = [
+            student.name,
+            student.class,
+            student.gender,
+            student.age,
+            `${new Date().toLocaleString()}`
+        ];
+
+        const result = await pool.query(query, values);
+        const newStudent: Student = result.rows[0];
+
+        console.log("new ", typeof(newStudent), " ", newStudent)
+
+        return {
+            data: newStudent,
+            message: 'Successfully created student',
+        };
+    } catch (error) {
+        console.error('Error adding student:', error);
+        return {
+            data: null,
+            message: 'Error adding student',
+        };
+    }
+};
+
+
 // This is an object that holds resolver functions for various parts of your GraphQL schema
 const todosResolvers = {
     Query: {
@@ -137,6 +273,18 @@ const todosResolvers = {
         //   3. To fetch books by author: { getBooks(author: "John Doe") }
         //   4. To fetch books by published year: { getBooks(published_year: 2023) }
         getBooks: async (_: any, { id, author, published_year }: { id?: string | null; author?: string | null; published_year?: number | null }) => getBooks({ id, author, published_year }),
+
+        // Resolver for the 'getStudents' query, which retrieves students based on optional criteria.
+        // Arguments:
+        //   - id: The ID of the student to retrieve (optional).
+        //   - name: The name of the student to retrieve (optional).
+        //   - age: The age of the student to retrieve (optional).
+        // Usage Examples:
+        //   1. To fetch all students: { getStudents }
+        //   2. To fetch a student by ID: { getStudents(id: "1") }
+        //   3. To fetch students by name: { getStudents(name: "John Doe") }
+        //   4. To fetch students by age: { getStudents(age: 20) }
+        getStudents: async (_: any, { id, name, age }: { id?: string | null; name?: string | null; age?: number | null }) => getStudents({ id, name, age }),
     },
     Mutation: {
         // Resolver for the 'createBook' mutation, which adds a new book.
@@ -156,7 +304,25 @@ const todosResolvers = {
                 console.log("Error:", e);
                 throw new Error("Failed to create book."); // Throw an error if there's an exception
             }
-        }
+        },
+        // Resolver for the 'createStudent' mutation, which adds a new student.
+        addStudent: async (_: any, { name, class: studentClass, age, gender }: Student) => {
+            try {
+                // Create a new student object to pass to the addStudent function
+                const newStudent: Student = {
+                    name,
+                    class: studentClass,
+                    gender,
+                    age
+                };
+
+                const result = await addStudent(newStudent);
+                return result; // Return the result if successful
+            } catch (e) {
+                console.log("Error:", e);
+                throw new Error("Failed to create student."); // Throw an error if there's an exception
+            }
+        },
     },
     Book: {
         // Resolver functions for Book fields (if needed)
