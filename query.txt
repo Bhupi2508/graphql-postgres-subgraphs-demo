@@ -1,18 +1,59 @@
-# mutation {
-#   createTodo(title: "first", completed: true) {
-#     id
-#     title
-#     completed
-#   }
-# }
+mutation {
+  createBook(
+    title: "Sample Book"
+    author: "John Doe"
+    published_year: 2023
+    description: "A sample book description"
+  ) {
+    data {
+      book_id
+      title
+      author
+      published_year
+      description
+      created
+    }
+    message
+  }
+}
+
 
 {
-  todo(id: "1") {
+  getBooks {
+    data {
+      title
+      author
+      published_year
+    }
     message
+  }
+}
+
+
+mutation {
+  addStudent(name: "Emily Davis", class: "Chemistry", gender: "Female", age: 20) {
     data {
       id
-      title
-      completed
+      name
+      gender
+      age
+      class
+      created
     }
+    message
+  }
+}
+
+query {
+  getStudents {
+    data {
+      id
+      name
+      gender
+      age
+      class
+      created
+    }
+    message
   }
 }

@@ -4,7 +4,7 @@
   "description": "Demo project showcasing a GraphQL API integrated with PostgreSQL, with a focus on subgraph modularization. Learn how to create, manage, and integrate subgraphs for improved GraphQL API organization and scalability",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --exec ts-node src/graphql-server.ts",
+    "start": "nodemon --exec ts-node src/gateway-entry.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -20,6 +20,7 @@
   "homepage": "https://github.com/Bhupi2508/graphql-postgres-subgraphs-demo#readme",
   "dependencies": {
     "@apollo/federation": "^0.38.1",
+    "@apollo/gateway": "^2.5.4",
     "@graphql-codegen/cli": "^5.0.0",
     "@graphql-tools/load-files": "^7.0.0",
     "@types/express": "^4.17.17",
