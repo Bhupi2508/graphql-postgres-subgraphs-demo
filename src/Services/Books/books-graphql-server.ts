@@ -3,9 +3,11 @@
 import { BookType, BookResultType } from './booksTypes'; // Import BookResultType
 import booksResolvers from './booksResolvers';
 import { ApolloServer } from 'apollo-server';
+import { buildFederatedSchema } from '@apollo/federation';
+import { gql } from 'apollo-server';
 import { makeExecutableSchema } from '@graphql-tools/schema'; // Import from the new package
 
-const typeDefs = `
+const typeDefs = gql`
 type Book @key(fields: "book_id") {
   book_id: ID
   title: String
@@ -34,7 +36,18 @@ type Book @key(fields: "book_id") {
   }
 `;
 
-const schema = makeExecutableSchema({
+// const schema = makeExecutableSchema({
+//   typeDefs,
+//   resolvers: booksResolvers,
+// });
+
+// const server = new ApolloServer({ schema });
+
+// server.listen({ port: 4001 }).then(({ url }) => {
+//   console.log(`Students service is running at ${url}`);
+// });
+
+const schema = buildFederatedSchema({
   typeDefs,
   resolvers: booksResolvers,
 });
@@ -42,7 +55,7 @@ const schema = makeExecutableSchema({
 const server = new ApolloServer({ schema });
 
 server.listen({ port: 4001 }).then(({ url }) => {
-  console.log(`Students service is running at ${url}`);
+  console.log(`Books service is running at ${url}`);
 });
 
 export { schema as bookSchema };

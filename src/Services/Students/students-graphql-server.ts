@@ -4,8 +4,10 @@ import { Student, StudentList, SingleStudentList } from './studentsTypes'; // Im
 import studentsResolvers from './studentsResolvers';
 import { ApolloServer } from 'apollo-server';
 import { makeExecutableSchema } from '@graphql-tools/schema'; //
+import { buildFederatedSchema } from '@apollo/federation';
+import { gql } from 'apollo-server';
 
-const typeDefs = `
+const typeDefs = gql`
   type Query {
     getStudents(id: ID, name: String, class: String, gender: String, age: Int): StudentList
   }
@@ -14,7 +16,7 @@ const typeDefs = `
     addStudent(name: String, class: String, gender: String, age: Int): SingleStudentResultType
   }
 
-  type Student {
+  type Student @key(fields: "id") {
     id: ID
     name: String
     class: String
@@ -34,15 +36,26 @@ type SingleStudentResultType {
 }
 `;
 
-const schema = makeExecutableSchema({
-    typeDefs,
-    resolvers: studentsResolvers,
+// const schema = makeExecutableSchema({
+//     typeDefs,
+//     resolvers: studentsResolvers,
+// });
+
+// const server = new ApolloServer({ schema });
+
+// server.listen({ port: 4002 }).then(({ url }) => {
+//     console.log(`Students service is running at ${url}`);
+// });
+
+const schema = buildFederatedSchema({
+  typeDefs,
+  resolvers: studentsResolvers,
 });
 
 const server = new ApolloServer({ schema });
 
 server.listen({ port: 4002 }).then(({ url }) => {
-    console.log(`Students service is running at ${url}`);
+  console.log(`Books service is running at ${url}`);
 });
 
 
